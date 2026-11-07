@@ -37,19 +37,19 @@ $ make ad2mo
 
 Standalone:
 ```console
-$ ./ad2mo
+$ ./build/ad2mo
 Printuno 64, 0
 ```
 
 Standard input:
 ```console
-$ echo $(date -u +"%Y-%m-%d") | ./ad2mo
+$ echo $(date -u +"%Y-%m-%d") | ./build/ad2mo
 Printuno 64, 0
 ```
 
 [ISO 8601] format:
 ```console
-$ ./ad2mo -v iso_fmt=1
+$ ./build/ad2mo -v iso_fmt=1
 0000-01-64
 ```
 
