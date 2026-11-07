@@ -251,6 +251,19 @@ void current_date(int *year, int *month, int *day) {
 	*day   = tm.tm_mday;
 }
 
+static int valid_date(int year, int month, int day) {
+	if (year == 0 || month < 1 || month > 12) {
+		return 0;
+	}
+
+	static const int month_days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	int max_day = month_days[month - 1];
+	if (month == 2 && ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)) {
+		max_day++;
+	}
+	return day >= 1 && day <= max_day;
+}
+
 const char* lookup_mapped_date(int month, int day, int is_leap) {
 	DateMapping* map = is_leap ? leap_day_map : day_map;
 
@@ -308,7 +321,28 @@ int main(int argc, char *argv[]) {
 	if (isatty(STDIN_FILENO)) {
 		current_date(&year, &month, &day);
 	} else {
-		if (scanf("%d-%d-%d", &year, &month, &day) != 3) {
+		char year_text[5] = "", month_text[3] = "", day_text[3] = "";
+		int chars_read = 0;
+		int matched = scanf("%4[0-9]-%2[0-9]-%2[0-9]%n",
+			year_text, month_text, day_text, &chars_read);
+		int ch = getchar();
+		if (ch == '\r') {
+			ch = getchar();
+		}
+		if (ch != '\n' && ch != EOF) {
+			matched = 0;
+		}
+
+		if (matched != 3 || chars_read != 10 || strlen(year_text) != 4
+			|| strlen(month_text) != 2 || strlen(day_text) != 2) {
+			fprintf(stderr, "Invalid date format\n");
+			return EXIT_FAILURE;
+		}
+
+		year = atoi(year_text);
+		month = atoi(month_text);
+		day = atoi(day_text);
+		if (!valid_date(year, month, day)) {
 			fprintf(stderr, "Invalid date format\n");
 			return EXIT_FAILURE;
 		}
