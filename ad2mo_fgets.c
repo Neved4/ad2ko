@@ -333,8 +333,16 @@ int main(int argc, char *argv[]) {
 			return EXIT_FAILURE;
 		}
 
-		char line[256];
+		char line[16];
 		while (fgets(line, sizeof(line), file)) {
+			if (strlen(line) == sizeof(line) - 1 && line[sizeof(line) - 2] != '\n') {
+				int ch;
+				while ((ch = fgetc(file)) != '\n' && ch != EOF) {
+				}
+				fprintf(stderr, "Invalid date format: line too long\n");
+				continue;
+			}
+
 			int year, month, day;
 			if (sscanf(line, "%d-%d-%d", &year, &month, &day) == 3) {
 				process_date(year, month, day, iso_fmt);
