@@ -21,16 +21,16 @@ Measured `1,107,050` dates at `tools/dates.txt` (`1970-01-01`-`5000-12-31`):
 
 | Version |         Time | Peak memory |
 | ------- | -----------: | ----------: |
-| C       | **0.2267 s** | **1.7 MiB** |
-| Awk     |     6.4201 s |    84.8 MiB |
+| C       | **0.2466 s** | **1.7 MiB** |
+| Awk     |     6.9442 s |    84.8 MiB |
 | Python  |     1.9207 s |    16.5 MiB |
 
 For a single date (`2024-03-20`):
 
 | Version |         Time |  Peak memory |
 | ------- | -----------: | -----------: |
-| C       | **0.0017 s** |     1.64 MiB |
-| Awk     |     0.0021 s | **1.56 MiB** |
+| C       | **0.0019 s** |     1.64 MiB |
+| Awk     |     0.0025 s | **1.56 MiB** |
 | Python  |     0.0299 s |     16.3 MiB |
 
 ## Usage
