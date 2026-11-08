@@ -96,14 +96,22 @@ function valid_date(value, year, month, day) {
 	if (value !~ /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/) {
 		return 0
 	}
-	split(value, fields, "-")
-	year = fields[1] + 0
-	month = fields[2] + 0
-	day = fields[3] + 0
-	if (year < 1 || month < 1 || month > 12) {
+
+	year = substr(value, 1, 4) + 0
+	month = substr(value, 6, 2) + 0
+	day = substr(value, 9, 2) + 0
+
+
+	if (year < 1 || month < 1 || month > 12 || day < 1) {
 		return 0
+
 	}
-	return day >= 1 && day <= days_in_month(year, month)
+
+	input_year = year
+	input_month = month
+	input_day = day
+
+	return day <= days_in_month(year, month)
 }
 
 function days_in_month(year, month) {
@@ -116,7 +124,8 @@ function days_in_month(year, month) {
 	return 31
 }
 
-function parse_options(idx) {
+function parse_opts(idx) {
+	iso_fmt = iso_fmt + 0
 	for (idx = 1; idx < ARGC; idx++) {
 		if (ARGV[idx] == "-i") {
 			iso_fmt = 1

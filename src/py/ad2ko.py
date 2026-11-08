@@ -49,19 +49,27 @@ def input_lines(path):
 		yield from sys.stdin
 
 def parse_date(value):
-	if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
-		raise ValueError(f"invalid date format: {value}")
-	try:
-		return date.fromisoformat(value)
-	except ValueError as error:
-		raise ValueError(f"invalid date format: {value}") from error
+	invalid = "invalid date format: " + value
+	valid = len(value) == 10 and value[4] == "-" and value[7] == "-"
+	valid = valid and value.isascii() and value.replace("-", "").isdigit()
+	if not valid:
+		return None, invalid
+	year, month, day = int(value[:4]), int(value[5:7]), int(value[8:])
+	max_day = (29 if is_leap(year) else 28) if month == 2 else 31
+	if month in (4, 6, 9, 11):
+		max_day = 30
+	if year < 1 or not 1 <= month <= 12 or not 1 <= day <= max_day:
+		return None, invalid
+	return (year, month, day), None
 
 def convert_lines(lines, iso):
 	for line in lines:
 		value = line.rstrip("\r\n")
-		try:
-			yield format_date(map_date(parse_date(value)), iso)
-		except ValueError as error:
+		date, error = parse_date(value)
+
+		if error:
+		else:
+			yield format_date(map_date(date), iso)
 			print(error, file=sys.stderr)
 			yield None
 
