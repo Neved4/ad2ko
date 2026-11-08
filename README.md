@@ -2,7 +2,7 @@
 
 Convert dates from Gregorian _"A.D."_ to Mekadimo date format.
 
-###### Originally from: [`mekadimo_date.py`]
+###### Originally by [lajtobw]
 
 ## Usage
 
@@ -59,6 +59,6 @@ This repository is licensed under the terms of the [MIT License].
    
 See the [LICENSE](LICENSE) file for details.
 
-[`mekadimo_date.py`]: https://github.com/lajtomekadimon/desktop-distros-config/blob/main/tiling-wm-config/.mekadimo_date.py
+[lajtobw]: https://github.com/lajtobw
 [MIT License]: https://opensource.org/license/mit/
 [ISO 8601]: https://en.wikipedia.org/wiki/ISO_8601
