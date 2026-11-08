@@ -27,35 +27,29 @@ function day_of_year(year, month, day, idx) {
 	return day
 }
 
-function cycle_date(year, doy, map, idx) {
-	idx = (286 + doy - 1) % 365
-	if (leap(year) && doy == 262) {
-		map["month"] = 2
-		map["day"] = 91
-		return
-	}
-	if (leap(year) && doy > 262) {
-		idx = (idx - 1) % 365
-	}
-	map["month"] = idx == 364 \
-		? 4 : int(idx / 91) + 1
-	map["day"] = idx == 364 ? 91 : idx % 91
-}
+function cycle_date(year, doy, idx, leap_year) {
+	leap_year = leap(year)
+	idx = (285 + doy - (leap_year && doy > 262)) % 365
 
-function map_date(gregorian, map, doy, boundary) {
-	doy = day_of_year(gregorian["year"], gregorian["month"],
-		gregorian["day"])
-	cycle_date(gregorian["year"], doy, map)
-	boundary = leap(gregorian["year"]) ? 20 : 21
-	if (gregorian["month"] < 3 ||
-		(gregorian["month"] == 3 && gregorian["day"] < boundary)) {
-		map["year"] = gregorian["year"] - 2025
+	if (leap_year && doy == 262) {
+		mapped_month = 2
+		mapped_day = 91
+	} else if (idx == 364) {
+		mapped_month = 4
+		mapped_day = 91
 	} else {
-		map["year"] = gregorian["year"] - 2024
+		mapped_month = int(idx / 91) + 1
+		mapped_day = idx % 91
 	}
 }
 
-function current_date(date, cmd, value, fields) {
+function map_date(year, month, day, prior_year) {
+	cycle_date(year, day_of_year(year, month, day))
+	prior_year = month < 3 || (month == 3 && day < 21 - leap(year))
+	mapped_year = year - 2024 - prior_year
+}
+
+function current_date(cmd, value) {
 	cmd = "date -u +'%Y-%m-%d'"
 	cmd | getline value
 	close(cmd)

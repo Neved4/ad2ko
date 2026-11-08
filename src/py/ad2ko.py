@@ -4,6 +4,7 @@
 import argparse
 from datetime import date, datetime, timezone
 import re
+MONTH_STARTS = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334)
 import sys
 
 MONTHS = ("Printuno", "Sometro", "Awtempo", "Vinro")
@@ -15,15 +16,21 @@ def cycle_date(year, day):
 	index = (285 + day - int(is_leap(year) and day > 262)) % 365
 	if is_leap(year) and day == 262:
 		return 2, 91
-	return (4, 91) if index == 364 else (index // 91 + 1, index % 91)
+
+	return (4, 91) if index == 364 else (
+		index // 91 + 1, index % 91
+	)
 
 def map_date(gregorian):
-	year, day = gregorian.year, gregorian.timetuple().tm_yday
-	month, day = cycle_date(year, day)
-	prior_year = gregorian.month < 3 or (
-		gregorian.month == 3 and gregorian.day < 21 - is_leap(year)
-	)
-	return year - 2024 - prior_year, month, day
+	year, month, day = gregorian
+	leap_year = is_leap(year)
+	day_of_year = MONTH_STARTS[month - 1] + day + int(month > 2 and leap_year)
+
+	mapped_month, mapped_day = cycle_date(year, day_of_year, leap_year)
+	prior_year = month < 3 or (month == 3 and day < 21 - leap_year)
+	mapped_year = year - 2024 - prior_year
+
+	return mapped_year, mapped_month, mapped_day
 
 def current_date():
 	return datetime.now(timezone.utc).date()
