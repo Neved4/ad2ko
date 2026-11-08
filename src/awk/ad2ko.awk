@@ -15,12 +15,12 @@ function leap(year) {
 	return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
 }
 
-function day_of_year(year, month, day, i) {
-	for (i = 1; i < month; i++) {
-		if (i == 2) {
+function day_of_year(year, month, day, idx) {
+	for (idx = 1; idx < month; idx++) {
+		if (idx == 2) {
 			day += leap(year) ? 29 : 28
-		} else if (i == 4 || i == 6 ||
-			i == 9 || i == 11) {
+		} else if (idx == 4 || idx == 6 ||
+			idx == 9 || idx == 11) {
 			day += 30
 		} else {
 			day += 31
@@ -29,19 +29,19 @@ function day_of_year(year, month, day, i) {
 	return day
 }
 
-function cycle_date(year, doy, map, i) {
-	i = (286 + doy - 1) % 365
+function cycle_date(year, doy, map, idx) {
+	idx = (286 + doy - 1) % 365
 	if (leap(year) && doy == 262) {
 		map["month"] = 2
 		map["day"] = 91
 		return
 	}
 	if (leap(year) && doy > 262) {
-		i = (i - 1) % 365
+		idx = (idx - 1) % 365
 	}
-	map["month"] = i == 364 \
-		? 4 : int(i / 91) + 1
-	map["day"] = i == 364 ? 91 : i % 91
+	map["month"] = idx == 364 \
+		? 4 : int(idx / 91) + 1
+	map["day"] = idx == 364 ? 91 : idx % 91
 }
 
 function map_date(gregorian, map, doy, boundary) {
@@ -127,18 +127,18 @@ function days_in_month(year, month) {
 	return 31
 }
 
-function parse_options(i) {
-	for (i = 1; i < ARGC; i++) {
-		if (ARGV[i] == "-i") {
+function parse_options(idx) {
+	for (idx = 1; idx < ARGC; idx++) {
+		if (ARGV[idx] == "-i") {
 			iso_fmt = 1
-			ARGV[i] = ""
-		} else if (ARGV[i] == "-h" || \
-			ARGV[i] == "--help") {
+			ARGV[idx] = ""
+		} else if (ARGV[idx] == "-h" || \
+			ARGV[idx] == "--help") {
 			usage()
 			skip_end = 1
 			exit 0
-		} else if (ARGV[i] ~ /^-/) {
-			errmsg("invalid option: " ARGV[i])
+		} else if (ARGV[idx] ~ /^-/) {
+			errmsg("invalid option: " ARGV[idx])
 			usage()
 			skip_end = 1
 			exit 2
