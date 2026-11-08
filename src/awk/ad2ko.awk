@@ -100,7 +100,7 @@ function read_current_date(date) {
 }
 
 function valid_date(value, fields, year, month, day) {
-	if (value !~ /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/) {
+	if (value !~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/) {
 		return 0
 	}
 	split(value, fields, "-")
