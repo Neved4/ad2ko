@@ -1,5 +1,6 @@
 ; Further simplified equivalent from the README's Further simplification section.
-(define-fun simplified-r ((d Int) (L Int)) Int (compact-r d L))
+(define-fun simplified-r ((d Int) (L Int)) Int
+  (mod (- (+ 285 d) (ite (and (= L 1) (> d 262)) 1 0)) 365))
 (define-fun simplified-e ((d Int) (L Int)) Int
   (+ (ite (= (simplified-r d L) 364) 1 0)
      (ite (and (= L 1) (= d 262)) 1 0)))
