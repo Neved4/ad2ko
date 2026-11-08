@@ -11,14 +11,6 @@ MONTHS = ("Printuno", "Sometro", "Awtempo", "Vinro")
 def is_leap(year):
 	return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
 
-def parse_date(value):
-	if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
-		raise ValueError(f"invalid date format: {value}")
-	try:
-		return date.fromisoformat(value)
-	except ValueError as error:
-		raise ValueError(f"invalid date format: {value}") from error
-
 def cycle_date(year, day):
 	index = (285 + day - int(is_leap(year) and day > 262)) % 365
 	if is_leap(year) and day == 262:
@@ -33,20 +25,6 @@ def map_date(gregorian):
 	)
 	return year - 2024 - prior_year, month, day
 
-def format_date(mapped, iso):
-	year, month, day = mapped
-	if iso:
-		return f"{year:04d}-{month:02d}-{day:02d}"
-	if day == 91 and month in (2, 4):
-		return f"{'Terakoro' if month == 2 else 'Korilo'} Day, {year}"
-	return f"{MONTHS[month - 1]} {day}, {year}"
-
-def arguments():
-	parser = argparse.ArgumentParser(description=__doc__)
-	parser.add_argument("-i", action="store_true", help="print ISO 8601 output")
-	parser.add_argument("-f", metavar="FILE", help="read dates from file")
-	return parser.parse_args()
-
 def current_date():
 	return datetime.now(timezone.utc).date()
 
@@ -59,6 +37,14 @@ def input_lines(path):
 	else:
 		yield from sys.stdin
 
+def parse_date(value):
+	if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
+		raise ValueError(f"invalid date format: {value}")
+	try:
+		return date.fromisoformat(value)
+	except ValueError as error:
+		raise ValueError(f"invalid date format: {value}") from error
+
 def convert_lines(lines, iso):
 	for line in lines:
 		value = line.rstrip("\r\n")
@@ -67,6 +53,20 @@ def convert_lines(lines, iso):
 		except ValueError as error:
 			print(error, file=sys.stderr)
 			yield None
+
+def arguments():
+	parser = argparse.ArgumentParser(description=__doc__)
+	parser.add_argument("-i", action="store_true", help="print ISO 8601 output")
+	parser.add_argument("-f", metavar="FILE", help="read dates from file")
+	return parser.parse_args()
+
+def format_date(mapped, iso):
+	year, month, day = mapped
+	if iso:
+		return f"{year:04d}-{month:02d}-{day:02d}"
+	if day == 91 and month in (2, 4):
+		return f"{'Terakoro' if month == 2 else 'Korilo'} Day, {year}"
+	return f"{MONTHS[month - 1]} {day}, {year}"
 
 def main():
 	options = arguments()
@@ -81,6 +81,7 @@ def any_error(lines):
 		else:
 			print(line)
 	return failed
+
 
 if __name__ == "__main__":
 	sys.exit(main())
