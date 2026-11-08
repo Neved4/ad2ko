@@ -129,7 +129,7 @@ function parse_options(idx) {
 	for (idx = 1; idx < ARGC; idx++) {
 		if (ARGV[idx] == "-i") {
 			iso_fmt = 1
-			ARGV[idx] = ""
+			delete ARGV[idx]
 		} else if (ARGV[idx] == "-h" || \
 			ARGV[idx] == "--help") {
 			usage()
