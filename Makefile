@@ -1,20 +1,18 @@
+.POSIX:
+.PHONY: all build ad2ko
+
 CC ?= cc
 CFLAGS ?= -O2 -Wall -Wextra -std=c11
 BUILD_DIR ?= build
 
-PROGRAMS := ad2mo ad2mo_fgets ad2mo_fstat ad2mo_getline
-SOURCES := $(addsuffix .c,$(PROGRAMS))
-TARGETS := $(addprefix $(BUILD_DIR)/,$(PROGRAMS))
+TARGETS := ${BUILD_DIR}/ad2ko
 
-.PHONY: all ad2mo
+all: ${TARGETS}
 
-all: $(TARGETS)
+build: all
 
-ad2mo: $(BUILD_DIR)/ad2mo
+ad2ko: ${BUILD_DIR}/ad2ko
 
-$(BUILD_DIR):
-	mkdir -p "$@"
-
-$(BUILD_DIR)/%: %.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -o "$@" "$<"
-
+${BUILD_DIR}/ad2ko: src/c/main.c src/c/date.h
+	mkdir -p "${BUILD_DIR}"
+	${CC} ${CFLAGS} -o "$@" "$<"
