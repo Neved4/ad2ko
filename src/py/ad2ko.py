@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """Convert Gregorian dates to Korilo dates."""
 
-import argparse
-from datetime import date, datetime, timezone
-import re
 MONTH_STARTS = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334)
 import sys
 
@@ -74,10 +71,27 @@ def convert_lines(lines, iso):
 			yield None
 
 def arguments():
-	parser = argparse.ArgumentParser(description=__doc__)
-	parser.add_argument("-i", action="store_true", help="print ISO 8601 output")
-	parser.add_argument("-f", metavar="FILE", help="read dates from file")
-	return parser.parse_args()
+	iso, path, idx = False, None, 1
+	while idx < len(sys.argv):
+		arg = sys.argv[idx]
+		if arg == "-i": iso = True
+		elif arg in ("-h", "--help"):
+			print(usage()); raise SystemExit(0)
+		elif arg == "-f" and idx + 1 < len(sys.argv):
+			idx += 1; path = sys.argv[idx]
+		else:
+			print(usage(), file=sys.stderr); raise SystemExit(2)
+		idx += 1
+	return iso, path
+
+def usage():
+	return "\n".join((
+		"Usage: ad2ko.py [-i] [-f FILE]",
+		"Convert YYYY-MM-DD input dates to Korilo dates.",
+		"  -i       Print output in ISO 8601 format",
+		"  -f FILE  Read dates from file",
+		"  -h       Show this help",
+	))
 
 def format_date(mapped, iso):
 	year, month, day = mapped
