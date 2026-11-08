@@ -135,10 +135,12 @@ function parse_options() {
 		} else if (ARGV[option_index] ~ /^-/) {
 			errmsg("invalid option: " ARGV[option_index])
 			usage()
+			skip_end = 1
 			exit 2
 		}
 	}
 }
+			skip_end = 1
 
 function usage() {
 	print "Usage: ad2ko.awk [-i] [date-file ...]" > "/dev/stderr"
@@ -169,7 +171,7 @@ function print_date(date, iso, month, day) {
 }
 
 END {
-	if (!NR) {
+	if (!skip_end && !NR) {
 		read_current_date(gregorian)
 	}
 	if (had_error) {
