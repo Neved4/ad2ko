@@ -53,49 +53,46 @@ function current_date(cmd, value) {
 	cmd = "date -u +'%Y-%m-%d'"
 	cmd | getline value
 	close(cmd)
-	split(value, fields, "-")
-	date["year"] = fields[1] + 0
-	date["month"] = fields[2] + 0
-	date["day"] = fields[3] + 0
+	process_input_date(value)
 }
 
-function read_date(date, value, from_input, fields) {
+function read_date(value, from_input) {
 	if (from_input) {
-		process_input_date(date, value)
-		return
+		process_input_date(value)
+	} else {
+		read_current_date()
 	}
-	read_current_date(date)
 }
 
-function process_input_date(date, value, fields, map) {
+function process_input_date(value) {
 	sub(/\r$/, "", value)
-	if (!valid_date(value, fields)) {
-		errmsg("invalid date format: " value)
-		had_error = 1
+
+
+	if (!valid_date(value)) {
+		err_msg("invalid date format: " value)
+		had_err = 1
 		return
 	}
-	date["year"] = fields[1] + 0
-	date["month"] = fields[2] + 0
-	date["day"] = fields[3] + 0
-	map_date(date, map)
-	print_date(map, iso_fmt)
+
+	map_date(input_year, input_month, input_day)
+	print_date(mapped_year, mapped_month, mapped_day, iso_fmt)
 	have_date = 1
 }
 
-function read_current_date(date, map) {
+function read_current_date() {
 	if (have_date) {
 		return
 	}
 	if (system("[ -t 0 ]") != 0) {
-		errmsg("invalid date format")
-		exit 1
+		err_msg("invalid date format")
+		had_err = 1
+		return
 	}
-	current_date(date)
-	map_date(date, map)
-	print_date(map, iso_fmt)
+
+	current_date()
 }
 
-function valid_date(value, fields, year, month, day) {
+function valid_date(value, year, month, day) {
 	if (value !~ /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/) {
 		return 0
 	}

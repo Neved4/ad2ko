@@ -33,14 +33,18 @@ def map_date(gregorian):
 	return mapped_year, mapped_month, mapped_day
 
 def current_date():
-	return datetime.now(timezone.utc).date()
+	from datetime import datetime, timezone
+	today = datetime.now(timezone.utc).date()
+
+	return today.year, today.month, today.day
 
 def input_lines(path):
 	if path:
 		with open(path, encoding="ascii") as source:
 			yield from source
 	elif sys.stdin.isatty():
-		yield current_date().isoformat()
+		year, month, day = current_date()
+		yield f"{year:04d}-{month:02d}-{day:02d}"
 	else:
 		yield from sys.stdin
 
