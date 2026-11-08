@@ -4,9 +4,7 @@ BEGIN {
 	split("Printuno Sometro Awtempo Vinro", month_names)
 	special_day_names[2] = "Terakoro Day"
 	special_day_names[4] = "Korilo Day"
-	iso_fmt = 0
-	had_error = 0
-	have_date = 0
+	iso_fmt = 0; had_error = 0; have_date = 0
 	gregorian["year"] = 0
 	parse_options()
 }
