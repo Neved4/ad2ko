@@ -4,6 +4,10 @@ BEGIN {
 	split("Printuno Sometro Awtempo Vinro", month_names)
 	special_day_names[2] = "Terakoro Day"
 	special_day_names[4] = "Korilo Day"
+	iso_fmt = 0
+	had_error = 0
+	have_date = 0
+	gregorian["year"] = 0
 	parse_options()
 }
 
@@ -11,12 +15,12 @@ function leap(year) {
 	return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
 }
 
-function day_of_year(year, month, day, month_index) {
-	for (month_index = 1; month_index < month; month_index++) {
-		if (month_index == 2) {
+function day_of_year(year, month, day, i) {
+	for (i = 1; i < month; i++) {
+		if (i == 2) {
 			day += leap(year) ? 29 : 28
-		} else if (month_index == 4 || month_index == 6 ||
-			month_index == 9 || month_index == 11) {
+		} else if (i == 4 || i == 6 ||
+			i == 9 || i == 11) {
 			day += 30
 		} else {
 			day += 31
@@ -25,19 +29,19 @@ function day_of_year(year, month, day, month_index) {
 	return day
 }
 
-function cycle_date(year, doy, map, cycle_index) {
-	cycle_index = (286 + doy - 1) % 365
+function cycle_date(year, doy, map, i) {
+	i = (286 + doy - 1) % 365
 	if (leap(year) && doy == 262) {
 		map["month"] = 2
 		map["day"] = 91
 		return
 	}
 	if (leap(year) && doy > 262) {
-		cycle_index = (cycle_index - 1) % 365
+		i = (i - 1) % 365
 	}
-	map["month"] = cycle_index == 364 \
-		? 4 : int(cycle_index / 91) + 1
-	map["day"] = cycle_index == 364 ? 91 : cycle_index % 91
+	map["month"] = i == 364 \
+		? 4 : int(i / 91) + 1
+	map["day"] = i == 364 ? 91 : i % 91
 }
 
 function map_date(gregorian, map, doy, boundary) {
@@ -53,10 +57,10 @@ function map_date(gregorian, map, doy, boundary) {
 	}
 }
 
-function current_date(date, command, value, fields) {
-	command = "date -u +'%Y-%m-%d'"
-	command | getline value
-	close(command)
+function current_date(date, cmd, value, fields) {
+	cmd = "date -u +'%Y-%m-%d'"
+	cmd | getline value
+	close(cmd)
 	split(value, fields, "-")
 	date["year"] = fields[1] + 0
 	date["month"] = fields[2] + 0
@@ -71,7 +75,7 @@ function read_date(date, value, from_input, fields) {
 	read_current_date(date)
 }
 
-function process_input_date(date, value, fields) {
+function process_input_date(date, value, fields, map) {
 	sub(/\r$/, "", value)
 	if (!valid_date(value, fields)) {
 		errmsg("invalid date format: " value)
@@ -86,7 +90,7 @@ function process_input_date(date, value, fields) {
 	have_date = 1
 }
 
-function read_current_date(date) {
+function read_current_date(date, map) {
 	if (have_date) {
 		return
 	}
@@ -123,31 +127,30 @@ function days_in_month(year, month) {
 	return 31
 }
 
-function parse_options() {
-	for (option_index = 1; option_index < ARGC; option_index++) {
-		if (ARGV[option_index] == "-i") {
+function parse_options(i) {
+	for (i = 1; i < ARGC; i++) {
+		if (ARGV[i] == "-i") {
 			iso_fmt = 1
-			ARGV[option_index] = ""
-		} else if (ARGV[option_index] == "-h" || \
-			ARGV[option_index] == "--help") {
+			ARGV[i] = ""
+		} else if (ARGV[i] == "-h" || \
+			ARGV[i] == "--help") {
 			usage()
+			skip_end = 1
 			exit 0
-		} else if (ARGV[option_index] ~ /^-/) {
-			errmsg("invalid option: " ARGV[option_index])
+		} else if (ARGV[i] ~ /^-/) {
+			errmsg("invalid option: " ARGV[i])
 			usage()
 			skip_end = 1
 			exit 2
 		}
 	}
 }
-			skip_end = 1
 
 function usage() {
 	print "Usage: ad2ko.awk [-i] [date-file ...]" > "/dev/stderr"
 	print "Convert YYYY-MM-DD input dates to Korilo dates." > "/dev/stderr"
 	print "  -i       Print output in ISO 8601 format" > "/dev/stderr"
 	print "  -h       Show this help" > "/dev/stderr"
-	print "Input files are positional; -f loads AWK scripts." > "/dev/stderr"
 }
 
 function errmsg(message) {
