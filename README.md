@@ -15,23 +15,27 @@ Finally, **performance was a primary driver**, we wanted to ensure that lightwei
 ## Benchmarks
 
 > [!NOTE]
-> All benchmarks were conducted using [`hyperfine`](https://github.com/sharkdp/hyperfine), with flags: `-N -w 4 -r 8`.
+> All benchmarks were conducted using [`hyperfine`](https://github.com/sharkdp/hyperfine), with flags: `-N -w 4 -r 8`. “Before” is the source at the parent commit; “current” is the optimized implementation. Peak memory is hyperfine’s reported process memory.
 
 Measured `1,107,050` dates at `tools/dates.txt` (`1970-01-01`-`5000-12-31`):
 
-| Version |         Time | Peak memory |
-| ------- | -----------: | ----------: |
-| C       | **0.2466 s** | **1.7 MiB** |
-| Awk     |     6.9442 s |    84.8 MiB |
-| Python  |     1.9207 s |    16.5 MiB |
+| Version       |         Time | Peak memory |
+| ------------- | -----------: | ----------: |
+| C             | **0.2384 s** | **1.7 MiB** |
+| Awk (before)  |     6.9797 s |  234.0 MiB |
+| Awk (current) |     3.2211 s |    1.6 MiB |
+| Python (before)  | 1.9371 s |   16.6 MiB |
+| Python (current) | **1.3304 s** | 13.5 MiB |
 
 For a single date (`2024-03-20`):
 
-| Version |         Time |  Peak memory |
-| ------- | -----------: | -----------: |
-| C       | **0.0019 s** |     1.64 MiB |
-| Awk     |     0.0025 s | **1.56 MiB** |
-| Python  |     0.0299 s |     16.3 MiB |
+| Version       |         Time | Peak memory |
+| ------------- | -----------: | ----------: |
+| C             | **0.0019 s** | **1.6 MiB** |
+| Awk (before)  |     0.0022 s |    1.6 MiB |
+| Awk (current) |     0.0021 s |    1.6 MiB |
+| Python (before)  | 0.0355 s | 16.3 MiB |
+| Python (current) | **0.0197 s** | 13.4 MiB |
 
 ## Usage
 
