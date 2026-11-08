@@ -155,7 +155,7 @@ function errmsg(message) {
 	print "Error: " message > "/dev/stderr"
 }
 
-function print_date(date, iso, month, day) {
+function print_date(date, iso, month, day, name) {
 	month = date["month"]
 	day = date["day"]
 	if (iso) {
