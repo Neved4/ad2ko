@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 """Convert Gregorian dates to Korilo dates."""
 
-MONTH_STARTS = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334)
 import sys
 
 MONTHS = ("Printuno", "Sometro", "Awtempo", "Vinro")
+MONTH_STARTS = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334)
 
 def is_leap(year):
 	return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
 
-def cycle_date(year, day):
-	index = (285 + day - int(is_leap(year) and day > 262)) % 365
-	if is_leap(year) and day == 262:
+def cycle_date(year, doy, leap_year):
+	index = (285 + doy - int(leap_year and doy > 262)) % 365
+
+	if leap_year and doy == 262:
 		return 2, 91
 
 	return (4, 91) if index == 364 else (
@@ -65,10 +66,10 @@ def convert_lines(lines, iso):
 		date, error = parse_date(value)
 
 		if error:
-		else:
-			yield format_date(map_date(date), iso)
 			print(error, file=sys.stderr)
 			yield None
+		else:
+			yield format_date(map_date(date), iso)
 
 def arguments():
 	iso, path, idx = False, None, 1
@@ -98,13 +99,13 @@ def format_date(mapped, iso):
 	if iso:
 		return f"{year:04d}-{month:02d}-{day:02d}"
 	if day == 91 and month in (2, 4):
-		return f"{'Terakoro' if month == 2 else 'Korilo'} Day, {year}"
+		name = "Terakoro" if month == 2 else "Korilo"
+		return f"{name} Day, {year}"
 	return f"{MONTHS[month - 1]} {day}, {year}"
 
 def main():
-	options = arguments()
-	output = convert_lines(input_lines(options.f), options.i)
-	return 1 if any_error(output) else 0
+	iso, path = arguments()
+	return int(any_error(convert_lines(input_lines(path), iso)))
 
 def any_error(lines):
 	failed = False
@@ -114,7 +115,6 @@ def any_error(lines):
 		else:
 			print(line)
 	return failed
-
 
 if __name__ == "__main__":
 	sys.exit(main())
